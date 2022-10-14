@@ -2,7 +2,7 @@
 
 Open source metaverse concept taking place in outer space. Players will be able to explore the infinate galaxy and collaborate with each other in their unique spaceship, which will be tradable on the open market.
 
-[Demo Link](https://astonishing-stroopwafel-02b744.netlify.app)
+[Demo Link](https://dev-space.jhely.world)
 
 ## Getting Started
 
