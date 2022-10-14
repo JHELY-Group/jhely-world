@@ -12,7 +12,7 @@ To get a local copy up and running follow these simple example steps:
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/Metaverse-00/prototype-01.git
+   git clone https://github.com/JHELY-Group/jhely-world.git
    ```
 2. Install NPM packages
    ```sh
