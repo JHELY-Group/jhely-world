@@ -1,5 +1,5 @@
 {
   "LOCAL_SERVER": "ws://localhost:2567",
   "LOCAL_ENV": "http://localhost:8888/.netlify/functions/env",
-  "ENV_URL": "https://astonishing-stroopwafel-02b744.netlify.app/.netlify/functions/env"
+  "ENV_URL": "https://dev-space.jhely.world/.netlify/functions/env"
 }
