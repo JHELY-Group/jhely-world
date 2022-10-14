@@ -1,8 +1,9 @@
 import React, { useContext } from 'react';
 import { RoomContext } from '../contexts/roomContext';
 import SceneContainer from 'babylonjs-hook';
+import Controls from './Controls';
 import Planets from './Planets';
-import SpaceShip from './SpaceShips';
+import SpaceShips from './SpaceShips';
 import {
   Scene,
   Vector3,
@@ -62,8 +63,9 @@ function SceneComponent() {
       onSceneReady={onSceneReady}
       renderChildrenWhenReady
     >
+      <Controls />
       <Planets />
-      <SpaceShip />
+      <SpaceShips />
     </SceneContainer>
   );
 }
