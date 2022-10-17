@@ -82,17 +82,19 @@ function Controls() {
     grid.addControl(rightBtn, 1, 2);
     grid.addControl(upBtn, 0, 1);
     grid.addControl(downBtn, 1, 1);
+
+    return [upBtn, downBtn, leftBtn, rightBtn];
   }
+
+  const inputMap: KeyInput = {
+    w: false,
+    a: false,
+    s: false,
+    d: false,
+  };
 
   useEffect(() => {
     if (scene) {
-      const inputMap: KeyInput = {
-        w: false,
-        a: false,
-        s: false,
-        d: false,
-      };
-
       scene.actionManager = new ActionManager(scene);
 
       scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, (e: ActionEvent) => {
@@ -108,7 +110,43 @@ function Controls() {
 
   useEffect(() => {
     if (isMobile) {
-      createMobileInputs();
+      const [upBtn, downBtn, leftBtn, rightBtn] = createMobileInputs();
+
+      upBtn.onPointerDownObservable.add(() => {
+        inputMap.w = true;
+        room.send('key_input', inputMap);
+      });
+      upBtn.onPointerUpObservable.add(() => {
+        inputMap.w = false;
+        room.send('key_input', inputMap);
+      });
+
+      downBtn.onPointerDownObservable.add(() => {
+        inputMap.s = true;
+        room.send('key_input', inputMap);
+      });
+      downBtn.onPointerUpObservable.add(() => {
+        inputMap.s = false;
+        room.send('key_input', inputMap);
+      });
+
+      leftBtn.onPointerDownObservable.add(() => {
+        inputMap.a = true;
+        room.send('key_input', inputMap);
+      });
+      leftBtn.onPointerUpObservable.add(() => {
+        inputMap.a = false;
+        room.send('key_input', inputMap);
+      });
+
+      rightBtn.onPointerDownObservable.add(() => {
+        inputMap.d = true;
+        room.send('key_input', inputMap);
+      });
+      rightBtn.onPointerUpObservable.add(() => {
+        inputMap.d = false;
+        room.send('key_input', inputMap);
+      });
     }
   }, [isMobile]);
 
