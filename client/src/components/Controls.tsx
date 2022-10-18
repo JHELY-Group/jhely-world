@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useScene } from 'babylonjs-hook';
 import { RoomContext } from '../contexts/roomContext';
 import useMediaQuery from '../hooks/useMediaQuery';
@@ -22,7 +22,12 @@ function Controls() {
   const roomCtx = useContext(RoomContext);
   const room = roomCtx!.room!;
 
-  const isMobile = useMediaQuery('(max-width: 900px)');
+  const [buttons, setButtons] = useState<Button[]>([]);
+  const [isLandscape, setIsLandscape] = useState<boolean>(window.innerWidth > window.innerHeight);
+
+  const mobileMax = useMediaQuery('(max-width: 900px)');
+  const mobileMin = useMediaQuery('(min-width: 480px)');
+  const isMobile = mobileMax && mobileMin;
 
   const createMobileInputs = () => {
     const plane = AdvancedDynamicTexture.CreateFullscreenUI('plane');
@@ -32,7 +37,7 @@ function Controls() {
     container.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
     container.height = 0.4;
     container.width = 0.35;
-    container.top = '-2%';
+    container.top = '-8%';
     container.thickness = 0;
 
     plane.addControl(container);
@@ -83,7 +88,10 @@ function Controls() {
     grid.addControl(upBtn, 0, 1);
     grid.addControl(downBtn, 1, 1);
 
-    return [upBtn, downBtn, leftBtn, rightBtn];
+    const buttons = [upBtn, downBtn, leftBtn, rightBtn];
+    setButtons(buttons);
+
+    return buttons;
   }
 
   const inputMap: KeyInput = {
@@ -92,6 +100,20 @@ function Controls() {
     s: false,
     d: false,
   };
+
+  useEffect(() => {
+    const media = window.matchMedia('(orientation: landscape)');
+    
+    const changeHandler = (e: MediaQueryListEvent) => {
+      setIsLandscape(e.matches);
+    }
+
+    media.addEventListener('change', changeHandler)
+
+    return () => {
+      media.removeEventListener('change', changeHandler);
+    }
+  }, []);
 
   useEffect(() => {
     if (scene) {
@@ -109,7 +131,8 @@ function Controls() {
   }, [scene]);
 
   useEffect(() => {
-    if (isMobile) {
+    if (isMobile && isLandscape) {
+      console.log(isLandscape)
       const [upBtn, downBtn, leftBtn, rightBtn] = createMobileInputs();
 
       upBtn.onPointerDownObservable.add(() => {
@@ -147,8 +170,11 @@ function Controls() {
         inputMap.d = false;
         room.send('key_input', inputMap);
       });
+    } else {
+      console.log(isLandscape)
+      buttons.forEach((btn: Button) => btn.dispose());
     }
-  }, [isMobile]);
+  }, [isMobile, isLandscape]);
 
   return null;
 }
