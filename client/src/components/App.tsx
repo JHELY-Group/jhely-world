@@ -5,6 +5,7 @@ import { RoomContext } from '../contexts/roomContext';
 import SceneComponent from './SceneComponent';
 import Backdrop from './Backdrop';
 import config from '../utils/url.json';
+import Chat from './Chat';
 
 function App() {
 
@@ -13,7 +14,7 @@ function App() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(config.ENV_URL);
+        const res = await fetch(config.LOCAL_ENV);
         const SERVER_URL = await res.json();
         const client = new Colyseus.Client(SERVER_URL);
 
@@ -34,11 +35,14 @@ function App() {
 
   return (
     <RoomContext.Provider value={{ room }}>
-      {room ?
-        <SceneComponent />
-        :
-        <Backdrop />
-      }
+      <div className='main-container'>
+        {room ?
+          <SceneComponent />
+          :
+          <Backdrop />
+        }
+        <Chat />
+      </div>
     </RoomContext.Provider>
   );
 }

@@ -16,6 +16,10 @@ body {
   -webkit-tap-highlight-color: #000;
 }
 
+.main-container {
+  position: relative;
+}
+
 canvas {
   width: 100%;
   height: 100vh;
@@ -32,4 +36,14 @@ canvas {
 
 .img-loading {
   width: 6rem;
+}
+
+.chat-wrapper {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 40%;
+  height: 35%;
+  padding: 1rem;
+  background-color: transparent;
 }
