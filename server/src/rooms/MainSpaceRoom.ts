@@ -28,7 +28,6 @@ export class MainSpaceRoom extends Room<MainSpaceState> {
     
     this.dispatcher.dispatch(new OnJoinCommand(), {
       sessionId: client.sessionId,
-      name: options.name
     });
     console.log(client.sessionId, "joined!");
   }

@@ -25,10 +25,10 @@ export class OnKeyInputCommand extends Command<MainSpaceRoom, {
 
 export class OnJoinCommand extends Command<MainSpaceRoom, {
   sessionId: string,
-  name: string,
 }> {
-  execute({ sessionId, name } = this.payload) {
+  execute({ sessionId } = this.payload) {
     const { A, B, C } = this.state.labels;
+    let name: string;
     let position: PositionState;
     let rotation: number;
     let alpha: number;
@@ -37,18 +37,21 @@ export class OnJoinCommand extends Command<MainSpaceRoom, {
     switch ("") {
       case A:
         this.state.labels.A = sessionId;
+        name = "Player_A"
         position = new PositionState(0, -5, 10);
         rotation = 0;
         alpha = Math.PI / 2;
         break;
       case B:
         this.state.labels.B = sessionId;
+        name = "Player_B"
         position = new PositionState(10, -5, 0);
         rotation = 90;
         alpha = Math.PI * 2;
         break;
       case C:
         this.state.labels.C = sessionId;
+        name = "Player_C"
         position = new PositionState(-10, -5, 0);
         rotation = -90;
         alpha = Math.PI;

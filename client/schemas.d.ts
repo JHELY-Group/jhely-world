@@ -22,7 +22,7 @@ export class LabelState extends Schema {
 
 export class PlayerState extends Schema {
 
-  @type("string") name: string;
+  @type("string") id: string;
 
   @type(PositionState) position: PositionState;
 
@@ -31,7 +31,7 @@ export class PlayerState extends Schema {
   @type(KeyInputState) keyInput: KeyInputState;
 
   constructor(
-    _name: string,
+    _id: string,
     _position: PositionState,
     _rotation: number
   );
