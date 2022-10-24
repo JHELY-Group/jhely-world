@@ -50,5 +50,8 @@ canvas {
   width: 35%;
   height: 35%;
   padding: 1rem;
+  border-radius: 6px;
+  backdrop-filter: blur(3px);
+  border: 2px solid #ffffff1a;
   background-color: transparent;
 }

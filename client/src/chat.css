@@ -1,9 +1,0 @@
-@import '~stream-chat-react/dist/css/v2/index.css';
-
-.str-chat {
-  backdrop-filter: blur(3px);
-  border-radius: 6px;
-  border: 2px solid #ffffff1a;
-  --str-chat__background-color: transparent;
-  --str-chat__message-textarea-border-radius: 6px;
-}
