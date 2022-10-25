@@ -1,8 +1,10 @@
-import { Schema, type, MapSchema } from '@colyseus/schema';
+import { Schema, type, MapSchema, ArraySchema } from '@colyseus/schema';
 
 export class MainSpaceState extends Schema {
 
   @type(LabelState) labels = new LabelState();
+
+  @type({ array: ChatState }) chats = new ArraySchema<ChatState>();
 
   @type({ map: PlayerState }) players: MapSchema<PlayerState>;
 
