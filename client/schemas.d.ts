@@ -1,7 +1,7 @@
 import { Schema, type, MapSchema } from '@colyseus/schema';
 
 export class MainSpaceState extends Schema {
-  
+
   @type(LabelState) labels = new LabelState();
 
   @type({ map: PlayerState }) players: MapSchema<PlayerState>;
@@ -20,9 +20,21 @@ export class LabelState extends Schema {
 
 }
 
-export class PlayerState extends Schema {
+export class ChatState extends Schema {
 
   @type("string") id: string;
+
+  @type("string") message: string;
+
+  @type("number") timestamp: number;
+
+  constructor(_id: string, _message: string, _timestamp: number);
+
+}
+
+export class PlayerState extends Schema {
+
+  @type("string") label: string;
 
   @type(PositionState) position: PositionState;
 
@@ -31,7 +43,7 @@ export class PlayerState extends Schema {
   @type(KeyInputState) keyInput: KeyInputState;
 
   constructor(
-    _id: string,
+    _label: string,
     _position: PositionState,
     _rotation: number
   );
@@ -75,3 +87,4 @@ export class CameraState extends Schema {
   constructor(_alpha: number, _position: PositionState);
 
 }
+
