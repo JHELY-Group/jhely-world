@@ -5,11 +5,13 @@ import {
   CheckPlayerCountCommand, 
   OnJoinCommand, 
   OnKeyInputCommand, 
-  OnLeaveCommand 
+  OnLeaveCommand, 
+  OnSendMsgCommand
 } from "../commands/MainSpaceCommand";
 
 export class MainSpaceRoom extends Room<MainSpaceState> {
 
+  serverTime: number = 0;
   dispatcher = new Dispatcher(this);
 
   onCreate (options: any) {
@@ -20,6 +22,18 @@ export class MainSpaceRoom extends Room<MainSpaceState> {
         sessionId: client.sessionId,
         data: msg
       })
+    });
+
+    this.onMessage("send_msg", (client, msg) => {
+      this.dispatcher.dispatch(new OnSendMsgCommand(), {
+        sessionId: client.sessionId,
+        message: msg,
+        timestamp: this.serverTime
+      })
+    });
+
+    this.setSimulationInterval((time: number) => {
+      this.serverTime += time;
     });
   }
 

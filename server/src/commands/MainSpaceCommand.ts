@@ -3,6 +3,7 @@ import { MainSpaceRoom } from "../rooms/MainSpaceRoom";
 import { CameraState } from "../schema/CameraState";
 import { PlayerState } from "../schema/PlayerState";
 import { PositionState } from "../schema/PositionState";
+import { ChatState } from "../schema/ChatState";
 import { ServerError } from "colyseus";
 
 export class OnKeyInputCommand extends Command<MainSpaceRoom, {
@@ -23,6 +24,17 @@ export class OnKeyInputCommand extends Command<MainSpaceRoom, {
   }
 }
 
+export class OnSendMsgCommand extends Command<MainSpaceRoom, {
+  sessionId: string,
+  message: string,
+  timestamp: number
+}> {
+  execute({ sessionId, message, timestamp } = this.payload) {
+    const chat = new ChatState(sessionId, message, timestamp);
+    this.state.chats.push(chat);
+  }
+}
+
 export class OnJoinCommand extends Command<MainSpaceRoom, {
   sessionId: string,
 }> {
@@ -32,7 +44,7 @@ export class OnJoinCommand extends Command<MainSpaceRoom, {
     let position: PositionState;
     let rotation: number;
     let alpha: number;
-    
+
     // assigns the first empty position
     switch ("") {
       case A:
