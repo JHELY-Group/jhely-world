@@ -10,6 +10,8 @@
 
 body {
   margin: 0;
+  color: #fff;
+  font-family: 'Play', sans-serif;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -43,10 +45,10 @@ canvas {
   width: 6rem;
 }
 
-.chat-wrapper {
+.chat-container {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  right: 1rem;
+  bottom: 1rem;
   width: 35%;
   height: 35%;
   padding: 1rem;
@@ -54,4 +56,53 @@ canvas {
   backdrop-filter: blur(3px);
   border: 2px solid #ffffff1a;
   background-color: transparent;
+}
+
+.chat-messages {
+  height: calc(100% - 3rem);
+  overflow: scroll;
+}
+
+.chat-message-group {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.2em;
+}
+
+.chat-player {
+  display: inline-block;
+}
+
+.chat-message {
+  width: calc(100% - 5rem);
+  word-break: break-word;
+}
+
+.chat-input {
+  height: 3rem;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid #ffffff1a;
+}
+
+input {
+  all: unset;
+}
+
+.chat-text {
+  width: 90%;
+  height: 100%;
+  padding: 0 0.6em;
+  background-color: #ffffff1a;
+}
+
+.chat-send {
+  width: 10%;
+  height: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
