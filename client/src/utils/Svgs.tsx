@@ -1,10 +1,11 @@
 type RightArrowProps = {
+  labelColor: string,
   isHover: boolean
 }
 
-export const RightArrow = ({ isHover }: RightArrowProps) => {
-  const color = isHover ? '#00f' : '#fff';
-
+export const RightArrow = ({ labelColor, isHover }: RightArrowProps) => {
+  
+  const color = isHover ? labelColor : '#fff';
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'

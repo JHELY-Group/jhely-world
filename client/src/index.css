@@ -66,16 +66,16 @@ canvas {
 .chat-message-group {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin-bottom: 0.2em;
 }
 
 .chat-player {
   display: inline-block;
+  margin-right: 0.5em;
 }
 
 .chat-message {
-  width: calc(100% - 5rem);
   word-break: break-word;
 }
 
