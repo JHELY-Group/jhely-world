@@ -25,8 +25,8 @@ function Controls() {
   const [buttons, setButtons] = useState<Button[]>([]);
   const [isLandscape, setIsLandscape] = useState<boolean>(window.innerWidth > window.innerHeight);
 
-  const mobileMax = useMediaQuery('(max-width: 900px)');
-  const mobileMin = useMediaQuery('(min-width: 480px)');
+  const mobileMax = window.matchMedia('(max-width: 900px)').matches;
+  const mobileMin = window.matchMedia('(min-width: 480px)').matches;
   const isMobile = mobileMax && mobileMin;
 
   const createMobileInputs = () => {
@@ -132,7 +132,6 @@ function Controls() {
 
   useEffect(() => {
     if (isMobile && isLandscape) {
-      console.log(isLandscape)
       const [upBtn, downBtn, leftBtn, rightBtn] = createMobileInputs();
 
       upBtn.onPointerDownObservable.add(() => {
@@ -171,7 +170,6 @@ function Controls() {
         room.send('key_input', inputMap);
       });
     } else {
-      console.log(isLandscape)
       buttons.forEach((btn: Button) => btn.dispose());
     }
   }, [isMobile, isLandscape]);
