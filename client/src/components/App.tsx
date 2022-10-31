@@ -16,6 +16,7 @@ function App() {
       try {
         const client = new Colyseus.Client(process.env.REACT_APP_SERVER_API);
         const room = await client.joinOrCreate<MainSpaceState>('main_space');
+
         room.onStateChange(() => {
           // clone room instance to cause re-render
           const roomClone = Object.create(
