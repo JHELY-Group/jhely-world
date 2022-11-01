@@ -14,10 +14,7 @@ function App() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(config.ENV_URL);
-        const SERVER_URL = await res.json();
-        const client = new Colyseus.Client(SERVER_URL);
-
+        const client = new Colyseus.Client(process.env.REACT_APP_SERVER_API);
         const room = await client.joinOrCreate<MainSpaceState>('main_space');
         room.onStateChange(() => {
           // clone room instance to cause re-render
