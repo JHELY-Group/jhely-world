@@ -4,7 +4,6 @@ import { MainSpaceState } from '../../schemas';
 import { RoomContext } from '../contexts/roomContext';
 import SceneComponent from './SceneComponent';
 import Backdrop from './Backdrop';
-import config from '../utils/url.json';
 import Chat from './Chat';
 
 function App() {
