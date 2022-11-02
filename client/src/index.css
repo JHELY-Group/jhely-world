@@ -45,6 +45,16 @@ canvas {
   width: 6rem;
 }
 
+.img-chat {
+  position: absolute;
+  width: 3rem;
+  right: 1.2rem;
+}
+
+.img-x {
+  height: 100%;
+}
+
 .chat-container {
   position: absolute;
   right: 1rem;
@@ -58,8 +68,14 @@ canvas {
   background-color: transparent;
 }
 
+.chat-header {
+  height: 3rem;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #ffffff1a;
+}
+
 .chat-messages {
-  height: calc(100% - 3rem);
+  height: calc(100% - 6rem);
   overflow: scroll;
 }
 
@@ -80,7 +96,6 @@ canvas {
 }
 
 .chat-input {
-  height: 3rem;
   display: flex;
   justify-content: space-between;
   padding-top: 1rem;
@@ -92,17 +107,17 @@ input {
 }
 
 .chat-text {
-  width: 90%;
+  width: 100%;
   height: 100%;
   padding: 0 0.6em;
   background-color: #ffffff1a;
 }
 
 .chat-send {
-  width: 10%;
   height: 100%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  margin-left: 1rem;
 }
