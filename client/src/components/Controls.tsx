@@ -24,7 +24,7 @@ function Controls() {
   const room = roomCtx!.room!;
 
   const moblieCtx = useContext(MobileContext)!;
-  const { isMobile, isLandscape } = moblieCtx;
+  const { isMobileLandscape, isLandscape } = moblieCtx;
 
   const [buttons, setButtons] = useState<Button[]>([]);
 
@@ -100,8 +100,6 @@ function Controls() {
     d: false,
   };
 
-
-
   useEffect(() => {
     if (scene) {
       scene.actionManager = new ActionManager(scene);
@@ -118,7 +116,7 @@ function Controls() {
   }, [scene]);
 
   useEffect(() => {
-    if (isMobile && isLandscape) {
+    if (isMobileLandscape && isLandscape) {
       const [upBtn, downBtn, leftBtn, rightBtn] = createMobileInputs();
 
       upBtn.onPointerDownObservable.add(() => {
@@ -159,7 +157,7 @@ function Controls() {
     } else {
       buttons.forEach((btn: Button) => btn.dispose());
     }
-  }, [isMobile, isLandscape]);
+  }, [isMobileLandscape, isLandscape]);
 
   return null;
 }

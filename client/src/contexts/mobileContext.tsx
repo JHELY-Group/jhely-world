@@ -1,7 +1,8 @@
 import React, { useState, createContext, ReactNode, useEffect } from "react";
 
 export interface MobileContextInterface {
-  isMobile: boolean | undefined,
+  isMobilePortrait: boolean | undefined,
+  isMobileLandscape: boolean | undefined,
   isLandscape: boolean,
 }
 
@@ -14,24 +15,29 @@ type ProviderProps = {
 export const MobileProvider = ({ children }: ProviderProps) => {
 
   const [isLandscape, setIsLandscape] = useState<boolean>(window.innerWidth > window.innerHeight);
-  const [isMobile, setIsMobile] = useState<boolean>();
+  const [isMobilePortrait, setIsMobilePortrait] = useState<boolean>();
+  const [isMobileLandscape, setIsMobileLandscape] = useState<boolean>();
 
   const media = window.matchMedia('(orientation: landscape)');
 
-  const getIsMobile = () => {
+  const getIsMobilePortrait = () => {
+    return window.matchMedia('(max-width: 420px)').matches;
+  }
+
+  const getIsMobileLandscape = () => {
     const mobileMax = window.matchMedia('(max-width: 900px)').matches;
     const mobileMin = window.matchMedia('(min-width: 480px)').matches;
     return mobileMax && mobileMin;
   }
 
   useEffect(() => {
-    setIsMobile(getIsMobile());
+    setIsMobilePortrait(getIsMobilePortrait());
+    setIsMobileLandscape(getIsMobileLandscape());
 
     const changeHandler = (e: MediaQueryListEvent) => {
       setIsLandscape(e.matches);
-      const mobileMax = window.matchMedia('(max-width: 900px)').matches;
-      const mobileMin = window.matchMedia('(min-width: 480px)').matches;
-      setIsMobile(getIsMobile());
+      setIsMobileLandscape(getIsMobileLandscape());
+      setIsMobilePortrait(getIsMobilePortrait());
     }
 
     media.addEventListener('change', changeHandler);
@@ -42,7 +48,9 @@ export const MobileProvider = ({ children }: ProviderProps) => {
   }, []);
 
   return (
-    <MobileContext.Provider value={{ isMobile, isLandscape }}>
+    <MobileContext.Provider
+      value={{ isMobilePortrait, isMobileLandscape, isLandscape }}
+    >
       {children}
     </MobileContext.Provider>
   )

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { RoomContext } from '../contexts/roomContext';
 import { ChatState } from '../../schemas';
 import { RightArrow } from '../utils/Svgs';
+import { MobileContext } from '../contexts/mobileContext';
 
 type Message = {
   label: string,
@@ -13,6 +14,9 @@ function Chat() {
 
   const roomCtx = useContext(RoomContext);
   const { state, sessionId } = roomCtx!.room!;
+
+  const mobileCtx = useContext(MobileContext)!;
+  const { isMobileLandscape, isLandscape } = mobileCtx;
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
@@ -32,7 +36,6 @@ function Chat() {
           message: chat.message
         });
       });
-
       setMessages(msgArr);
     }
 
