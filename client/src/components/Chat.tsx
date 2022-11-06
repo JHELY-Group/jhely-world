@@ -63,6 +63,7 @@ function Chat() {
   ) => {
     e.preventDefault();
     roomCtx!.room!.send('send_msg', input);
+    setInput('');
   }
 
   const matchColor = (label: string) => {
