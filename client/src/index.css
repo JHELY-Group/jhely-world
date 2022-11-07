@@ -4,8 +4,14 @@
   box-sizing: border-box;
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   margin: 0;
+  color: #fff;
+  font-family: 'Play', sans-serif;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -16,9 +22,14 @@ body {
   -webkit-tap-highlight-color: #000;
 }
 
+.main-container {
+  height: 100vh;
+  position: relative;
+}
+
 canvas {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   touch-action: none;
 }
 
@@ -32,4 +43,66 @@ canvas {
 
 .img-loading {
   width: 6rem;
+}
+
+.chat-container {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  width: 35%;
+  height: 35%;
+  padding: 1rem;
+  border-radius: 6px;
+  backdrop-filter: blur(3px);
+  border: 2px solid #ffffff1a;
+  background-color: transparent;
+}
+
+.chat-messages {
+  height: calc(100% - 3rem);
+  overflow: scroll;
+}
+
+.chat-message-group {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 0.2em;
+}
+
+.chat-player {
+  display: inline-block;
+  margin-right: 0.5em;
+}
+
+.chat-message {
+  word-break: break-word;
+}
+
+.chat-input {
+  height: 3rem;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid #ffffff1a;
+}
+
+input {
+  all: unset;
+}
+
+.chat-text {
+  width: 90%;
+  height: 100%;
+  padding: 0 0.6em;
+  background-color: #ffffff1a;
+}
+
+.chat-send {
+  width: 10%;
+  height: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }

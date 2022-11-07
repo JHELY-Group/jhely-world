@@ -5,6 +5,7 @@ import { RoomContext } from '../contexts/roomContext';
 import SceneComponent from './SceneComponent';
 import Backdrop from './Backdrop';
 import config from '../utils/url.json';
+import Chat from './Chat';
 
 function App() {
 
@@ -14,7 +15,8 @@ function App() {
     (async () => {
       try {
         const client = new Colyseus.Client(process.env.REACT_APP_SERVER_API);
-        const room = await client.joinOrCreate<MainSpaceState>('main_space', { name: 'player' });
+        const room = await client.joinOrCreate<MainSpaceState>('main_space');
+
         room.onStateChange(() => {
           // clone room instance to cause re-render
           const roomClone = Object.create(
@@ -31,11 +33,16 @@ function App() {
 
   return (
     <RoomContext.Provider value={{ room }}>
-      {room ?
-        <SceneComponent />
-        :
-        <Backdrop />
-      }
+      <div className='main-container'>
+        {room ?
+          <>
+            <SceneComponent />
+            <Chat />
+          </>
+          :
+          <Backdrop />
+        }
+      </div>
     </RoomContext.Provider>
   );
 }

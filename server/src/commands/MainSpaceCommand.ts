@@ -3,6 +3,7 @@ import { MainSpaceRoom } from "../rooms/MainSpaceRoom";
 import { CameraState } from "../schema/CameraState";
 import { PlayerState } from "../schema/PlayerState";
 import { PositionState } from "../schema/PositionState";
+import { ChatState } from "../schema/ChatState";
 import { ServerError } from "colyseus";
 
 export class OnKeyInputCommand extends Command<MainSpaceRoom, {
@@ -23,38 +24,52 @@ export class OnKeyInputCommand extends Command<MainSpaceRoom, {
   }
 }
 
+export class OnSendMsgCommand extends Command<MainSpaceRoom, {
+  sessionId: string,
+  message: string,
+  timestamp: number
+}> {
+  execute({ sessionId, message, timestamp } = this.payload) {
+    const chat = new ChatState(sessionId, message, timestamp);
+    this.state.chats.push(chat);
+  }
+}
+
 export class OnJoinCommand extends Command<MainSpaceRoom, {
   sessionId: string,
-  name: string,
 }> {
-  execute({ sessionId, name } = this.payload) {
+  execute({ sessionId } = this.payload) {
     const { A, B, C } = this.state.labels;
+    let label: string;
     let position: PositionState;
     let rotation: number;
     let alpha: number;
-    
+
     // assigns the first empty position
     switch ("") {
       case A:
         this.state.labels.A = sessionId;
+        label = "A";
         position = new PositionState(0, -5, 10);
         rotation = 0;
         alpha = Math.PI / 2;
         break;
       case B:
         this.state.labels.B = sessionId;
+        label = "B";
         position = new PositionState(10, -5, 0);
         rotation = 90;
         alpha = Math.PI * 2;
         break;
       case C:
         this.state.labels.C = sessionId;
+        label = "C";
         position = new PositionState(-10, -5, 0);
         rotation = -90;
         alpha = Math.PI;
         break;
     }
-    this.state.players.set(sessionId, new PlayerState(name, position, rotation));
+    this.state.players.set(sessionId, new PlayerState(label, position, rotation));
     this.state.cameras.set(sessionId, new CameraState(alpha, position));
   }
 }

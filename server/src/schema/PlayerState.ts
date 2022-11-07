@@ -4,7 +4,7 @@ import { PositionState } from "./PositionState";
 
 export class PlayerState extends Schema {
 
-  @type("string") name: string;
+  @type("string") label: string;
 
   @type(PositionState) position: PositionState;
 
@@ -13,12 +13,12 @@ export class PlayerState extends Schema {
   @type(KeyInputState) keyInput: KeyInputState;
 
   constructor(
-    _name: string,
+    _label: string,
     _position: PositionState,
     _rotation: number
   ) {
     super();
-    this.name = _name;
+    this.label = _label;
     this.position = _position;
     this.rotation = _rotation;
     this.keyInput = new KeyInputState();
