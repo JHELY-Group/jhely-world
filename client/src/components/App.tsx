@@ -1,40 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useContext } from 'react';
 import * as Colyseus from 'colyseus.js';
-import { MainSpaceState } from '../../schemas';
 import { RoomContext } from '../contexts/roomContext';
+import { MobileProvider } from '../contexts/mobileContext';
 import SceneComponent from './SceneComponent';
 import Backdrop from './Backdrop';
-import config from '../utils/url.json';
 import Chat from './Chat';
 
 function App() {
 
-  const [room, setRoom] = useState<Colyseus.Room<MainSpaceState> | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const client = new Colyseus.Client(process.env.REACT_APP_SERVER_API);
-        const room = await client.joinOrCreate<MainSpaceState>('main_space');
-
-        room.onStateChange(() => {
-          // clone room instance to cause re-render
-          const roomClone = Object.create(
-            Object.getPrototypeOf(room),
-            Object.getOwnPropertyDescriptors(room)
-          );
-          setRoom(roomClone)
-        });
-      } catch (err) {
-        console.log(err);
-      }
-    })();
-  }, []);
+  const roomCtx = useContext(RoomContext)!;
 
   return (
-    <RoomContext.Provider value={{ room }}>
+    <MobileProvider>
       <div className='main-container'>
-        {room ?
+        {roomCtx.room ?
           <>
             <SceneComponent />
             <Chat />
@@ -43,7 +22,7 @@ function App() {
           <Backdrop />
         }
       </div>
-    </RoomContext.Provider>
+    </MobileProvider>
   );
 }
 

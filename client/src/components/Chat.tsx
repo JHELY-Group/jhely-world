@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { RoomContext } from '../contexts/roomContext';
 import { ChatState } from '../../schemas';
 import { RightArrow } from '../utils/Svgs';
+import { MobileContext } from '../contexts/mobileContext';
 
 type Message = {
   label: string,
@@ -14,10 +15,15 @@ function Chat() {
   const roomCtx = useContext(RoomContext);
   const { state, sessionId } = roomCtx!.room!;
 
+  const mobileCtx = useContext(MobileContext)!;
+  const { isMobilePortrait, isMobileLandscape } = mobileCtx;
+  const isMobile = isMobilePortrait || isMobileLandscape;
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
   const [labelColor, setLabelColor] = useState<string>('');
   const [isHover, setIsHover] = useState<boolean>(false);
+  const [showChat, setShowChat] = useState<boolean>(!isMobile);
 
   useEffect(() => {
     if (state.chats.length > 0) {
@@ -32,7 +38,6 @@ function Chat() {
           message: chat.message
         });
       });
-
       setMessages(msgArr);
     }
 
@@ -58,6 +63,7 @@ function Chat() {
   ) => {
     e.preventDefault();
     roomCtx!.room!.send('send_msg', input);
+    setInput('');
   }
 
   const matchColor = (label: string) => {
@@ -91,32 +97,74 @@ function Chat() {
     );
   });
 
+  const styles = {
+    img: {
+      display: showChat ? 'none' : 'block',
+      bottom: isMobilePortrait ? '1.2rem' : '3rem'
+    },
+    chat: {
+      display: showChat ? 'block' : 'none',
+      width: isMobile ? 'calc(100% - 2rem)' : '35%',
+      height: isMobile ? 'calc(100% - 2rem)' : '35%',
+    },
+    chatHeader: {
+      display: isMobile ? 'block' : 'none',
+      marginBottom: isMobile ? '1em' : '0',
+    },
+    chatMessages: {
+      fontSize: isMobile ? '1.5rem' : '1rem',
+      height: isMobile ? 'calc(100% - 8rem)' : 'calc(100% - 3rem)',
+    },
+    chatInput: {
+      fontSize: isMobile ? '1.5rem' : '1rem',
+      height: isMobile ? '4rem' : '3rem',
+    }
+  }
+
   return (
-    <div className='chat-container'>
-      <div className='chat-messages'>
-        {messagesArr}
-      </div>
-      <form
-        className='chat-input'
-        onSubmit={(e: React.FormEvent<HTMLFormElement>) => submitHandler(e)}
-      >
-        <input
-          type='text'
-          className='chat-text'
-          placeholder='Type a Message'
-          value={input}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => changeHandler(e)}
-        />
-        <div
-          className='chat-send'
-          onMouseEnter={() => setIsHover(true)}
-          onMouseLeave={() => setIsHover(false)}
-          onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => submitHandler(e)}
-        >
-          <RightArrow labelColor={labelColor} isHover={isHover} />
+    <>
+      <img
+        className='img-chat'
+        src='assets/images/chat.svg'
+        onClick={() => setShowChat(prev => !prev)}
+        style={styles.img}
+        alt=''
+      />
+      <div className='chat-container' style={styles.chat}>
+        <div className='chat-header' style={styles.chatHeader}>
+          <img
+            className='img-x'
+            src='assets/images/x.svg'
+            onClick={() => setShowChat(prev => !prev)}
+            alt=''
+          />
         </div>
-      </form>
-    </div>
+        <div className='chat-messages' style={styles.chatMessages}>
+          {messagesArr}
+        </div>
+        <form
+          className='chat-input'
+          style={styles.chatInput}
+          onSubmit={(e: React.FormEvent<HTMLFormElement>) => submitHandler(e)}
+        >
+          <input
+            type='text'
+            className='chat-text'
+            placeholder='Type a Message'
+            value={input}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => changeHandler(e)}
+          />
+          <div
+            className='chat-send'
+            onMouseEnter={() => setIsHover(true)}
+            onMouseLeave={() => setIsHover(false)}
+            onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => submitHandler(e)}
+          >
+            <RightArrow labelColor={labelColor} isHover={isHover} />
+          </div>
+        </form>
+      </div>
+    </>
   );
 }
 
