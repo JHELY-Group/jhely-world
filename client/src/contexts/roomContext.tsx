@@ -34,7 +34,6 @@ export const RoomProvider = ({ children }: RoomProviderProps) => {
       }
     })();
 
-
   }, []);
 
   return (
