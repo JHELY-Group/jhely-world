@@ -1,8 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { RoomContext } from '../contexts/roomContext';
-import { ChatState, PlayerState } from '../../schemas';
-import { RightArrow } from '../utils/Svgs';
 import { MobileContext } from '../contexts/mobileContext';
+import { ChatState, PlayerState } from '../../schemas';
+import { AudioChatService } from '../lib/audioChat/service';
+import { useScene } from 'babylonjs-hook';
+import { RightArrow } from '../utils/Svgs';
 import Peer from 'peerjs';
 
 type Message = {
@@ -12,6 +14,8 @@ type Message = {
 }
 
 function Chat() {
+
+  const scene = useScene();
 
   const roomCtx = useContext(RoomContext);
   const { state, sessionId } = roomCtx!.room!;
@@ -26,8 +30,7 @@ function Chat() {
   const [isHover, setIsHover] = useState<boolean>(false);
   const [showChat, setShowChat] = useState<boolean>(!isMobile);
 
-  const [peer, setPeer] = useState<Peer>();
-  const [stream, setStream] = useState<MediaStream>();
+  const { addPeer, removePeer } = new AudioChatService(sessionId);
 
   useEffect(() => {
     if (state.chats.length > 0) {
@@ -59,46 +62,15 @@ function Chat() {
   }, []);
 
   useEffect(() => {
-    (async () => {
-      const peer = new Peer(sessionId);
-      const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
-
-      setPeer(peer);
-      setStream(stream);
-
-      peer.on('open', (id) => console.log(`Peerjs object instantiated with id:`, id));
-
-      peer.on('call', call => {
-        call.answer(stream);
-
-        call.on('stream', stream => {
-          const audio = document.createElement('audio');
-          audio.srcObject = stream;
-          audio.addEventListener('loadeddata', () => {
-            audio.play()
-            console.log('Received call from:', call.peer);
-          });
-        });
-      });
-
-    })();
-  }, []);
-
-  const callPlayers = (peer: Peer, stream: MediaStream) => {
-    state.players.forEach((player: PlayerState, id: string) => {
+    state.players.forEach((p: PlayerState, id: string) => {
       if (sessionId === id) return;
-
-      const call = peer.call(id, stream);
-      call.on('stream', stream => {
-        const audio = document.createElement('audio');
-        audio.srcObject = stream;
-        audio.addEventListener('loadeddata', () => {
-          audio.play()
-          console.log('Called', id);
-        });
-      });
+      addPeer(id);
     });
-  }
+
+    state.players.onRemove = (p: PlayerState, id: string) => {
+      removePeer(id);
+    }
+  }, []);
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -169,12 +141,6 @@ function Chat() {
 
   return (
     <>
-      <img
-        className='img-call'
-        src='assets/images/call.svg'
-        onClick={() => callPlayers(peer!, stream!)}
-        alt=''
-      />
       <img
         className='img-chat'
         src='assets/images/chat.svg'
