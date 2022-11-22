@@ -1,9 +1,9 @@
 import '@babylonjs/loaders';
 import React, { useContext, useEffect } from 'react';
 import { RoomContext } from '../contexts/roomContext';
-import { DataChange } from '@colyseus/schema';
 import { PlayerState } from '../../schemas';
 import { useScene } from 'babylonjs-hook';
+import { DataChange } from '@colyseus/schema';
 import {
   SceneLoader,
   AbstractMesh,
