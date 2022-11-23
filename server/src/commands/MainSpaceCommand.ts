@@ -93,6 +93,7 @@ export class OnLeaveCommand extends Command<MainSpaceRoom, {
     }
     this.state.players.delete(sessionId);
     this.state.cameras.delete(sessionId);
+    if (!this.state.players.size) this.state.chats.clear();
   }
 }
 
