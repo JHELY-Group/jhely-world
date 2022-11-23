@@ -50,26 +50,6 @@ function SpaceShips() {
     }
   }
 
-  const sendKeyInputs = (scene: Scene, room: Colyseus.Room<MainSpaceState>) => {
-    const inputMap: KeyInput = {
-      w: false,
-      a: false,
-      s: false,
-      d: false,
-    };
-
-    scene.actionManager = new ActionManager(scene);
-
-    scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, (e: ActionEvent) => {
-      inputMap[e.sourceEvent.key as keyof KeyInput] = e.sourceEvent.type == 'keydown';
-      room.send('key_input', inputMap);
-    }));
-    scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyUpTrigger, (e: ActionEvent) => {
-      inputMap[e.sourceEvent.key as keyof KeyInput] = e.sourceEvent.type == 'keydown';
-      room.send('key_input', inputMap);
-    }));
-  }
-
   useEffect(() => {
     if (scene) {
       const spaceCrafts = {} as SpaceCrafts;
@@ -108,8 +88,6 @@ function SpaceShips() {
           });
         }
       });
-
-      sendKeyInputs(scene, room);
 
       // ----- display animations from server data ----- //
 
