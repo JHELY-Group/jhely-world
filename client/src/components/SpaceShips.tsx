@@ -1,20 +1,15 @@
 import '@babylonjs/loaders';
 import React, { useContext, useEffect } from 'react';
 import { RoomContext } from '../contexts/roomContext';
-import * as Colyseus from 'colyseus.js';
-import { MainSpaceState, PlayerState } from '../../schemas';
+import { DataChange } from '@colyseus/schema';
+import { PlayerState } from '../../schemas';
 import { useScene } from 'babylonjs-hook';
 import {
   SceneLoader,
   AbstractMesh,
   Vector3,
-  ActionManager,
-  ExecuteCodeAction,
-  ActionEvent,
-  ArcRotateCamera,
-  Scene
+  ArcRotateCamera
 } from '@babylonjs/core';
-import { DataChange } from '@colyseus/schema';
 
 type SpaceCrafts = {
   [sessionId: string]: AbstractMesh[]
@@ -39,7 +34,7 @@ function SpaceShips() {
 
   const getMesh = (sessionId: string) => {
     const { A, B, C } = room.state.labels;
-    
+
     switch (sessionId) {
       case A:
         return 'spaceCraft1.obj';
@@ -50,6 +45,55 @@ function SpaceShips() {
     }
   }
 
+  const loadSpaceShip = (
+    player: PlayerState,
+    sessionId: string,
+    keyInputs: KeyInputs,
+    spaceCrafts: SpaceCrafts
+  ) => {
+    keyInputs[sessionId] = {
+      w: false,
+      a: false,
+      s: false,
+      d: false,
+    }
+
+    const mesh = getMesh(sessionId);
+
+    SceneLoader.ImportMesh('', 'assets/models/', mesh, scene,
+      (meshes: AbstractMesh[]) => {
+        const { rotation, position: { x, y, z } } = player;
+        spaceCrafts[sessionId] = meshes;
+
+        meshes.forEach((mesh: AbstractMesh) => {
+          mesh.position = new Vector3(x, y, z);
+          mesh.scaling = new Vector3(0.2, 0.2, 0.2);
+
+          const rotateAngle = rotation;
+          const rotateRadian = rotateAngle * (Math.PI / 180);
+          mesh.rotate(Vector3.Up(), rotateRadian);
+        });
+      });
+
+    player.keyInput.onChange = (changes: DataChange<any>[]) => {
+      changes.forEach((change: DataChange<any>) => {
+        keyInputs[sessionId][change.field as keyof KeyInput] = change.value;
+      });
+    }
+  }
+
+  const clearSpaceShip = (
+    sessionId: string,
+    keyInputs: KeyInputs,
+    spaceCrafts: SpaceCrafts
+  ) => {
+    spaceCrafts![sessionId].forEach((mesh: AbstractMesh) => {
+      mesh.dispose();
+    });
+    delete keyInputs[sessionId];
+    delete spaceCrafts[sessionId];
+  }
+
   useEffect(() => {
     if (scene) {
       const spaceCrafts = {} as SpaceCrafts;
@@ -57,62 +101,36 @@ function SpaceShips() {
       const keyInputs = {} as KeyInputs;
 
       room.state.players.forEach((player: PlayerState, sessionId: string) => {
-
-        keyInputs[sessionId] = {
-          w: false,
-          a: false,
-          s: false,
-          d: false,
-        }
-
-        const mesh = getMesh(sessionId);
-
-        SceneLoader.ImportMesh('', 'assets/models/', mesh, scene,
-          (meshes: AbstractMesh[]) => {
-            const { rotation, position: { x, y, z } } = player;
-            spaceCrafts[sessionId] = meshes;
-
-            meshes.forEach((mesh: AbstractMesh) => {
-              mesh.position = new Vector3(x, y, z);
-              mesh.scaling = new Vector3(0.2, 0.2, 0.2);
-
-              const rotateAngle = rotation;
-              const rotateRadian = rotateAngle * (Math.PI / 180);
-              mesh.rotate(Vector3.Up(), rotateRadian);
-            });
-          });
-
-        player.keyInput.onChange = (changes: DataChange<any>[]) => {
-          changes.forEach((change: DataChange<any>) => {
-            keyInputs[sessionId][change.field as keyof KeyInput] = change.value
-          });
-        }
+        loadSpaceShip(player, sessionId, keyInputs, spaceCrafts);
       });
 
-      // ----- display animations from server data ----- //
+      room.state.players.onAdd = (player: PlayerState, sessionId: string) => {
+        loadSpaceShip(player, sessionId, keyInputs, spaceCrafts);
+      }
 
-      let inputMap: KeyInputs = {} as KeyInputs;
-
-      scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnEveryFrameTrigger, () => {
-        inputMap = keyInputs;
-      }));
+      room.state.players.onRemove = (p: PlayerState, sessionId: string) => {
+        clearSpaceShip(sessionId, keyInputs, spaceCrafts);
+      }
 
       const rotateAngle = 1;
       const rotateRadian = rotateAngle * (Math.PI / 180);
       const camera = scene.getCameraByName('camera') as ArcRotateCamera;
 
       scene.registerBeforeRender(() => {
+        if (!Object.keys(keyInputs).length) return;
+
         for (const sessionId in spaceCrafts) {
+          const inputMap = keyInputs[sessionId];
           const currentPlayer = sessionId === room.sessionId;
 
-          if (inputMap[sessionId]['w']) {
+          if (inputMap['w']) {
             spaceCrafts[sessionId].forEach((mesh: AbstractMesh) => {
               mesh.moveWithCollisions(mesh.forward.scaleInPlace(-0.2));
               if (currentPlayer) {
                 camera.lockedTarget = mesh;
               }
             });
-          } else if (inputMap[sessionId]['s']) {
+          } else if (inputMap['s']) {
             spaceCrafts[sessionId].forEach((mesh: AbstractMesh) => {
               mesh.moveWithCollisions(mesh.forward.scaleInPlace(0.2));
               if (currentPlayer) {
@@ -120,14 +138,14 @@ function SpaceShips() {
               }
             });
           }
-          if (inputMap[sessionId]['a']) {
+          if (inputMap['a']) {
             spaceCrafts[sessionId].forEach((mesh: AbstractMesh) => {
               mesh.rotate(Vector3.Up(), -Math.abs(rotateRadian));
             });
             if (currentPlayer) {
               camera.alpha += rotateRadian;
             }
-          } else if (inputMap[sessionId]['d']) {
+          } else if (inputMap['d']) {
             spaceCrafts[sessionId].forEach((mesh: AbstractMesh) => {
               mesh.rotate(Vector3.Up(), rotateRadian);
             });
@@ -147,7 +165,7 @@ function SpaceShips() {
         }
       }
     }
-  }, [scene, room.state.players.size]);
+  }, [scene]);
 
   return null;
 }
