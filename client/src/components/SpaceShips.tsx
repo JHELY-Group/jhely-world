@@ -121,37 +121,42 @@ function SpaceShips() {
 
         for (const sessionId in spaceCrafts) {
           const inputMap = keyInputs[sessionId];
+          const spaceCraft = spaceCrafts[sessionId];
           const currentPlayer = sessionId === room.sessionId;
 
           if (inputMap['w']) {
-            spaceCrafts[sessionId].forEach((mesh: AbstractMesh) => {
+            spaceCraft.forEach((mesh: AbstractMesh) => {
               mesh.moveWithCollisions(mesh.forward.scaleInPlace(-0.2));
-              if (currentPlayer) {
-                camera.lockedTarget = mesh;
-              }
             });
+            if (currentPlayer) {
+              camera.lockedTarget = spaceCraft[0];
+            }
+            const { _x, _y, _z } = spaceCraft[0].position;
+            room.send('player_position', { _x, _y, _z });
+
           } else if (inputMap['s']) {
-            spaceCrafts[sessionId].forEach((mesh: AbstractMesh) => {
+            spaceCraft.forEach((mesh: AbstractMesh) => {
               mesh.moveWithCollisions(mesh.forward.scaleInPlace(0.2));
-              if (currentPlayer) {
-                camera.lockedTarget = mesh;
-              }
             });
+            if (currentPlayer) {
+              camera.lockedTarget = spaceCraft[0];
+            }
+            const { _x, _y, _z } = spaceCraft[0].position;
+            room.send('player_position', { _x, _y, _z });
           }
           if (inputMap['a']) {
-            spaceCrafts[sessionId].forEach((mesh: AbstractMesh) => {
+            spaceCraft.forEach((mesh: AbstractMesh) => {
               mesh.rotate(Vector3.Up(), -Math.abs(rotateRadian));
             });
-            if (currentPlayer) {
-              camera.alpha += rotateRadian;
-            }
+            room.send('player_rotation', -1);
+            if (currentPlayer) camera.alpha += rotateRadian;
+
           } else if (inputMap['d']) {
-            spaceCrafts[sessionId].forEach((mesh: AbstractMesh) => {
+            spaceCraft.forEach((mesh: AbstractMesh) => {
               mesh.rotate(Vector3.Up(), rotateRadian);
             });
-            if (currentPlayer) {
-              camera.alpha -= rotateRadian;
-            }
+            room.send('player_rotation', 1);
+            if (currentPlayer) camera.alpha -= rotateRadian;
           }
         }
       });
