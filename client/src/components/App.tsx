@@ -10,17 +10,15 @@ function App() {
 
   const roomCtx = useContext(RoomContext)!;
 
+  if (!roomCtx.room) return <Backdrop />;
+
+  if (!roomCtx.room.state.players.size) return <Backdrop />;
+
   return (
     <MobileProvider>
       <div className='main-container'>
-        {roomCtx.room ?
-          <>
-            <SceneComponent />
-            <Chat />
-          </>
-          :
-          <Backdrop />
-        }
+        <SceneComponent />
+        <Chat />
       </div>
     </MobileProvider>
   );

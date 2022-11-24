@@ -15,20 +15,20 @@ type RoomProviderProps = {
 export const RoomProvider = ({ children }: RoomProviderProps) => {
 
   const [room, setRoom] = useState<Colyseus.Room<MainSpaceState>>();
+  const [counter, setCounter] = useState<number>(0);
 
   useEffect(() => {
     (async () => {
       try {
         const client = new Colyseus.Client(process.env.REACT_APP_SERVER_API);
         const room = await client.joinOrCreate<MainSpaceState>('main_space');
-        room.onStateChange(() => {
-          // clone room instance to cause re-render
-          const roomClone = Object.create(
-            Object.getPrototypeOf(room),
-            Object.getOwnPropertyDescriptors(room)
-          );
-          setRoom(roomClone)
-        });
+
+        room.state.players.onAdd = () => {
+          if (counter > 0) return;
+
+          setRoom(room);
+          setCounter(1);
+        }
       } catch (err) {
         console.log(err);
       }
