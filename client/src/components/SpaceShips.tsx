@@ -130,33 +130,35 @@ function SpaceShips() {
             });
             if (currentPlayer) {
               camera.lockedTarget = spaceCraft[0];
+              const { _x, _y, _z } = spaceCraft[0].position;
+              room.send('player_position', { _x, _y, _z });
             }
-            const { _x, _y, _z } = spaceCraft[0].position;
-            room.send('player_position', { _x, _y, _z });
-
           } else if (inputMap['s']) {
             spaceCraft.forEach((mesh: AbstractMesh) => {
               mesh.moveWithCollisions(mesh.forward.scaleInPlace(0.2));
             });
             if (currentPlayer) {
               camera.lockedTarget = spaceCraft[0];
+              const { _x, _y, _z } = spaceCraft[0].position;
+              room.send('player_position', { _x, _y, _z });
             }
-            const { _x, _y, _z } = spaceCraft[0].position;
-            room.send('player_position', { _x, _y, _z });
           }
           if (inputMap['a']) {
             spaceCraft.forEach((mesh: AbstractMesh) => {
               mesh.rotate(Vector3.Up(), -Math.abs(rotateRadian));
             });
-            room.send('player_rotation', -1);
-            if (currentPlayer) camera.alpha += rotateRadian;
-
+            if (currentPlayer) {
+              camera.alpha += rotateRadian;
+              room.send('player_rotation', -1);
+            }
           } else if (inputMap['d']) {
             spaceCraft.forEach((mesh: AbstractMesh) => {
               mesh.rotate(Vector3.Up(), rotateRadian);
             });
-            room.send('player_rotation', 1);
-            if (currentPlayer) camera.alpha -= rotateRadian;
+            if (currentPlayer) {
+              camera.alpha -= rotateRadian;
+              room.send('player_rotation', 1);
+            }
           }
         }
       });
