@@ -6579,10 +6579,10 @@ peerjs-js-binarypack@1.0.1:
   resolved "https://registry.yarnpkg.com/peerjs-js-binarypack/-/peerjs-js-binarypack-1.0.1.tgz#80fa2b61c794a6b16d64253700405e476ada29be"
   integrity sha512-N6aeia3NhdpV7kiGxJV5xQiZZCVEEVjRz2T2C6UZQiBkHWHzUv/oWA4myQLcwBwO8LUoR1KWW5oStvwVesmfCg==
 
-peerjs@^1.4.7:
-  version "1.4.7"
-  resolved "https://registry.yarnpkg.com/peerjs/-/peerjs-1.4.7.tgz#37db0cd06fb0c542664bd6b2f62e87c98d38fbad"
-  integrity sha512-dWE2HIGvJO0Hm8lYHJiO/5OWl8xYtGcAuU08To1HMIfhh76ULzkCS3NIQO/PZm4noO1RhaGTkQaQ6sbAss6/Tg==
+peerjs@1.4.6-rc.2:
+  version "1.4.6-rc.2"
+  resolved "https://registry.yarnpkg.com/peerjs/-/peerjs-1.4.6-rc.2.tgz#aa5fa7135f258788be8e850e7c4e969c4f66c0fa"
+  integrity sha512-Droh3w/FL6aCQnV0ijF8tG4gkzKzfKdbw0A4KQKd6hArVYagN5Uwm/LNXk01O5sn0QVBAhwoN/Pokg+4Db1EDw==
   dependencies:
     "@swc/helpers" "^0.3.13"
     eventemitter3 "^4.0.7"
