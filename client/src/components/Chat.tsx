@@ -26,7 +26,14 @@ function Chat() {
   const [isHover, setIsHover] = useState<boolean>(false);
   const [showChat, setShowChat] = useState<boolean>(!isMobile);
 
-  const { peer, peers, stream, addPeer, removePeer } = useAudioChat(sessionId);
+  const { 
+    peer, 
+    peers, 
+    stream, 
+    isInitialized, 
+    addPeer, 
+    removePeer 
+  } = useAudioChat(sessionId);
 
   useEffect(() => {
     if (state.chats.length > 0) {
@@ -58,7 +65,7 @@ function Chat() {
   }, []);
 
   useEffect(() => {
-    if (!peer || !stream) return;
+    if (!peer || !stream || !isInitialized) return;
 
     const player = state.players.get(sessionId)!;
 
@@ -74,7 +81,7 @@ function Chat() {
       removePeer(peer);
     }
 
-  }, [peer, stream]);
+  }, [peer, stream, isInitialized]);
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);

@@ -8,6 +8,7 @@ function useAudioChat(id: string) {
   const [peer, setPeer] = useState<Peer>();
   const [peers, setPeers] = useState<Peers>(new Map());
   const [stream, setStream] = useState<MediaStream>();
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -15,6 +16,7 @@ function useAudioChat(id: string) {
       const peer = new Peer(processedId);
 
       peer.on('open', id => {
+        setIsInitialized(true);
         console.log(`Peerjs object instantiated with id:`, id)
       });
 
@@ -93,7 +95,14 @@ function useAudioChat(id: string) {
     return id.replaceAll(/[^0-9a-z]/gi, 'G');
   }
 
-  return { peer, peers, stream, addPeer, removePeer };
+  return { 
+    isInitialized, 
+    peer, 
+    peers, 
+    stream, 
+    addPeer, 
+    removePeer 
+  };
 }
 
 export default useAudioChat;
