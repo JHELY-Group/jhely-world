@@ -8,41 +8,50 @@ function useAudioChat(id: string) {
   const [peer, setPeer] = useState<Peer>();
   const [peers, setPeers] = useState<Peers>(new Map());
   const [stream, setStream] = useState<MediaStream>();
-  const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
       const processedId = processId(id);
       const peer = new Peer(processedId);
-      setPeer(peer);
 
-      const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+      peer.on('open', id => {
+        console.log(`Peerjs object instantiated with id:`, id)
+      });
+
+      const stream = await navigator.mediaDevices.getUserMedia(
+        { video: false, audio: true }
+      );
+
+      peer.on('call', call => {
+        call.answer(stream);
+
+        call.on('stream', stream => {
+          const audio = document.createElement('audio');
+          addAudioStream(audio, stream);
+          peers.set(call.peer, { call, audio });
+          setPeers(new Map(peers));
+          console.log('Received call from:', call.peer);
+        });
+
+        call.on('close', () => {
+          removePeer(call.peer);
+        });
+
+        call.on('error', error => {
+          console.log(error)
+        })
+      });
+
+      peer.on('error', error => {
+        console.log(error)
+      });
+
+      setPeer(peer);
       setStream(stream);
     })();
+
+    return () => peer?.destroy();
   }, []);
-
-  useEffect(() => {
-    if (!peer || !stream) return;
-
-    peer.on('call', call => {
-      call.answer(stream);
-
-      call.on('stream', stream => {
-        const audio = document.createElement('audio');
-        addAudioStream(audio, stream);
-        peers.set(call.peer, { call, audio });
-        console.log('peers:', peers);
-        console.log('Received call from:', call.peer);
-      });
-
-      call.on('close', () => {
-        console.log('removing peer...')
-        removePeer(call.peer);
-      });
-    });
-    setIsInitialized(true);
-
-  }, [peer, stream]);
 
   const addPeer = (id: string) => {
     if (!peer || !stream) return;
@@ -50,11 +59,15 @@ function useAudioChat(id: string) {
     const processedId = processId(id);
     const call = peer.call(processedId, stream);
 
+    call.on('error', error => {
+      console.log(error)
+    })
+
     call.on('stream', stream => {
       const audio = document.createElement('audio');
       addAudioStream(audio, stream);
       peers.set(processedId, { call, audio });
-      console.log('peers:', peers);
+      setPeers(new Map(peers));
       console.log('Called', processedId);
     });
   }
@@ -67,7 +80,7 @@ function useAudioChat(id: string) {
     call.close();
     audio.remove();
     peers.delete(processedId);
-    console.log('peers:', peers);
+    setPeers(new Map(peers));
     console.log('Removed', processedId);
   }
 
@@ -80,7 +93,7 @@ function useAudioChat(id: string) {
     return id.replaceAll(/[^0-9a-z]/gi, 'G');
   }
 
-  return { isInitialized, addPeer, removePeer };
+  return { peer, peers, stream, addPeer, removePeer };
 }
 
 export default useAudioChat;

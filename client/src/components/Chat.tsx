@@ -26,7 +26,7 @@ function Chat() {
   const [isHover, setIsHover] = useState<boolean>(false);
   const [showChat, setShowChat] = useState<boolean>(!isMobile);
 
-  const { isInitialized, addPeer, removePeer } = useAudioChat(sessionId);
+  const { peer, peers, stream, addPeer, removePeer } = useAudioChat(sessionId);
 
   useEffect(() => {
     if (state.chats.length > 0) {
@@ -58,26 +58,23 @@ function Chat() {
   }, []);
 
   useEffect(() => {
-    if (!isInitialized) return;
-    console.log('isInitialized...')
+    if (!peer || !stream) return;
+
     const player = state.players.get(sessionId)!;
 
     player.callablePeers.forEach(peer => {
-      console.log('calling:', peer)
       addPeer(peer);
     });
 
     player.callablePeers.onAdd = peer => {
-      console.log('calling:', peer)
       addPeer(peer);
     }
 
     player.callablePeers.onRemove = peer => {
-      console.log('removing:', peer)
       removePeer(peer);
     }
 
-  }, [isInitialized]);
+  }, [peer, stream]);
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -148,6 +145,13 @@ function Chat() {
 
   return (
     <>
+      {peers.size > 0 &&
+        <img
+          className='img-call'
+          src='assets/images/call.svg'
+          alt=''
+        />
+      }
       <img
         className='img-chat'
         src='assets/images/chat.svg'
