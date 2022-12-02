@@ -44,10 +44,13 @@ export class PlayerState extends Schema {
 
   @type(KeyInputState) keyInput: KeyInputState;
 
+  @type(["string"]) callablePeers: ArraySchema<string>;
+
   constructor(
     _label: string,
     _position: PositionState,
-    _rotation: number
+    _rotation: number,
+    _callablePeers: ArraySchema<string>
   );
 
 }

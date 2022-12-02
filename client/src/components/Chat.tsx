@@ -1,11 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { RoomContext } from '../contexts/roomContext';
 import { MobileContext } from '../contexts/mobileContext';
-import { ChatState, PlayerState } from '../../schemas';
-import { AudioChatService } from '../lib/audioChat/service';
-import { useScene } from 'babylonjs-hook';
+import { ChatState } from '../../schemas';
 import { RightArrow } from '../utils/Svgs';
-import Peer from 'peerjs';
+import useAudioChat from '../hooks/useAudioChat';
 
 type Message = {
   label: string,
@@ -14,8 +12,6 @@ type Message = {
 }
 
 function Chat() {
-
-  const scene = useScene();
 
   const roomCtx = useContext(RoomContext);
   const { state, sessionId } = roomCtx!.room!;
@@ -30,7 +26,7 @@ function Chat() {
   const [isHover, setIsHover] = useState<boolean>(false);
   const [showChat, setShowChat] = useState<boolean>(!isMobile);
 
-  const { addPeer, removePeer } = new AudioChatService(sessionId);
+  const { isInitialized, addPeer, removePeer } = useAudioChat(sessionId);
 
   useEffect(() => {
     if (state.chats.length > 0) {
@@ -48,8 +44,8 @@ function Chat() {
       setMessages(msgArr);
     }
 
-    const player = state.players.get(sessionId);
-    const matchedColor = matchColor(player!.label);
+    const player = state.players.get(sessionId)!;
+    const matchedColor = matchColor(player.label);
     setLabelColor(matchedColor);
 
     state.chats.onAdd = (chat: ChatState) => {
@@ -62,15 +58,26 @@ function Chat() {
   }, []);
 
   useEffect(() => {
-    state.players.forEach((p: PlayerState, id: string) => {
-      if (sessionId === id) return;
-      addPeer(id);
+    if (!isInitialized) return;
+    console.log('isInitialized...')
+    const player = state.players.get(sessionId)!;
+
+    player.callablePeers.forEach(peer => {
+      console.log('calling:', peer)
+      addPeer(peer);
     });
 
-    state.players.onRemove = (p: PlayerState, id: string) => {
-      removePeer(id);
+    player.callablePeers.onAdd = peer => {
+      console.log('calling:', peer)
+      addPeer(peer);
     }
-  }, []);
+
+    player.callablePeers.onRemove = peer => {
+      console.log('removing:', peer)
+      removePeer(peer);
+    }
+
+  }, [isInitialized]);
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
