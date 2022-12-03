@@ -189,6 +189,15 @@ export class OnLeaveCommand extends Command<MainSpaceRoom, {
     this.state.players.delete(sessionId);
     this.state.cameras.delete(sessionId);
     if (!this.state.players.size) this.state.chats.clear();
+
+    this.state.players.forEach((player: PlayerState, id: string) => {
+      if (sessionId === id) return;
+
+      const peerIndex = player.callablePeers.indexOf(sessionId);
+      if (peerIndex >= 0) {
+        player.callablePeers.deleteAt(peerIndex);
+      }
+    });
   }
 }
 
