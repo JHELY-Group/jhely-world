@@ -4,7 +4,9 @@ import { MainSpaceState } from "../schema/MainSpaceState";
 import { 
   CheckPlayerCountCommand, 
   OnJoinCommand, 
-  OnKeyInputCommand, 
+  OnKeyInputCommand,
+  OnPositionCommand,
+  OnRotationCommand, 
   OnLeaveCommand, 
   OnSendMsgCommand
 } from "../commands/MainSpaceCommand";
@@ -19,6 +21,20 @@ export class MainSpaceRoom extends Room<MainSpaceState> {
 
     this.onMessage("key_input", (client, msg) => {
       this.dispatcher.dispatch(new OnKeyInputCommand(), {
+        sessionId: client.sessionId,
+        data: msg
+      })
+    });
+
+    this.onMessage("player_position", (client, msg) => {
+      this.dispatcher.dispatch(new OnPositionCommand(), {
+        sessionId: client.sessionId,
+        data: msg
+      })
+    });
+
+    this.onMessage("player_rotation", (client, msg) => {
+      this.dispatcher.dispatch(new OnRotationCommand(), {
         sessionId: client.sessionId,
         data: msg
       })

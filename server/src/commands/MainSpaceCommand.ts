@@ -24,6 +24,32 @@ export class OnKeyInputCommand extends Command<MainSpaceRoom, {
   }
 }
 
+export class OnPositionCommand extends Command<MainSpaceRoom, {
+  sessionId: string,
+  data: {
+    _x: number,
+    _y: number,
+    _z: number,
+  }
+}> {
+  execute({ sessionId, data } = this.payload) {
+    const { position } = this.state.players.get(sessionId);
+    position.x = data._x;
+    position.y = data._y;
+    position.z = data._z;
+  }
+}
+
+export class OnRotationCommand extends Command<MainSpaceRoom, {
+  sessionId: string,
+  data: number
+}> {
+  execute({ sessionId, data } = this.payload) {
+    const player = this.state.players.get(sessionId);
+    player.rotation += data;
+  }
+}
+
 export class OnSendMsgCommand extends Command<MainSpaceRoom, {
   sessionId: string,
   message: string,
@@ -93,6 +119,7 @@ export class OnLeaveCommand extends Command<MainSpaceRoom, {
     }
     this.state.players.delete(sessionId);
     this.state.cameras.delete(sessionId);
+    if (!this.state.players.size) this.state.chats.clear();
   }
 }
 
