@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { RoomContext } from '../contexts/roomContext';
+import { MobileContext } from '../contexts/mobileContext';
 import { ChatState } from '../../schemas';
 import { RightArrow } from '../utils/Svgs';
-import { MobileContext } from '../contexts/mobileContext';
+import useAudioChat from '../hooks/useAudioChat';
 
 type Message = {
   label: string,
@@ -25,6 +26,15 @@ function Chat() {
   const [isHover, setIsHover] = useState<boolean>(false);
   const [showChat, setShowChat] = useState<boolean>(!isMobile);
 
+  const { 
+    peer, 
+    peers, 
+    stream, 
+    isInitialized, 
+    addPeer, 
+    removePeer 
+  } = useAudioChat(sessionId);
+
   useEffect(() => {
     if (state.chats.length > 0) {
       let msgArr: Message[] = [];
@@ -41,8 +51,8 @@ function Chat() {
       setMessages(msgArr);
     }
 
-    const player = state.players.get(sessionId);
-    const matchedColor = matchColor(player!.label);
+    const player = state.players.get(sessionId)!;
+    const matchedColor = matchColor(player.label);
     setLabelColor(matchedColor);
 
     state.chats.onAdd = (chat: ChatState) => {
@@ -53,6 +63,25 @@ function Chat() {
       ));
     }
   }, []);
+
+  useEffect(() => {
+    if (!peer || !stream || !isInitialized) return;
+
+    const player = state.players.get(sessionId)!;
+
+    player.callablePeers.forEach(peer => {
+      addPeer(peer);
+    });
+
+    player.callablePeers.onAdd = peer => {
+      addPeer(peer);
+    }
+
+    player.callablePeers.onRemove = peer => {
+      removePeer(peer);
+    }
+
+  }, [peer, stream, isInitialized]);
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -123,6 +152,13 @@ function Chat() {
 
   return (
     <>
+      {peers.size > 0 &&
+        <img
+          className='img-call'
+          src='assets/images/call.svg'
+          alt=''
+        />
+      }
       <img
         className='img-chat'
         src='assets/images/chat.svg'

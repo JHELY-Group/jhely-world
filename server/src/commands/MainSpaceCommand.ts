@@ -4,6 +4,7 @@ import { CameraState } from "../schema/CameraState";
 import { PlayerState } from "../schema/PlayerState";
 import { PositionState } from "../schema/PositionState";
 import { ChatState } from "../schema/ChatState";
+import { ArraySchema } from "@colyseus/schema";
 import { ServerError } from "colyseus";
 
 export class OnKeyInputCommand extends Command<MainSpaceRoom, {
@@ -33,10 +34,46 @@ export class OnPositionCommand extends Command<MainSpaceRoom, {
   }
 }> {
   execute({ sessionId, data } = this.payload) {
-    const { position } = this.state.players.get(sessionId);
+    const { position, callablePeers } = this.state.players.get(sessionId);
     position.x = data._x;
     position.y = data._y;
     position.z = data._z;
+
+    this.state.players.forEach((otherPlayer: PlayerState, id: string) => {
+      if (sessionId === id) return;
+
+      let isCaller: boolean;
+      // two players should not call each other, only one player should
+      for (let i = 0; i < sessionId.length; i++) {
+        if (sessionId.charCodeAt(i) > id.charCodeAt(i)) {
+          isCaller = false;
+          break;
+        }
+        if (sessionId.charCodeAt(i) < id.charCodeAt(i)) {
+          isCaller = true;
+          break;
+        }
+      }
+
+      const trigger = 30;
+      const deltaX = Math.abs(position.x - otherPlayer.position.x);
+      const deltaZ = Math.abs(position.z - otherPlayer.position.z);
+
+      const peers = isCaller ? callablePeers : otherPlayer.callablePeers;
+      const seshId = isCaller ? id : sessionId;
+
+      if (
+        deltaX + deltaZ <= trigger &&
+        peers.indexOf(seshId) < 0
+      ) {
+        peers.push(seshId);
+      } else if (
+        deltaX + deltaZ > trigger &&
+        peers.indexOf(seshId) >= 0
+      ) {
+        peers.deleteAt(peers.indexOf(seshId));
+      }
+    });
   }
 }
 
@@ -95,7 +132,39 @@ export class OnJoinCommand extends Command<MainSpaceRoom, {
         alpha = Math.PI;
         break;
     }
-    this.state.players.set(sessionId, new PlayerState(label, position, rotation));
+
+    const callablePeers = new ArraySchema<string>();
+
+    this.state.players.forEach((otherPlayer: PlayerState, id: string) => {
+      if (sessionId === id) return;
+
+      let isCaller: boolean;
+      // two players should not call each other, only one player should
+      for (let i = 0; i < sessionId.length; i++) {
+        if (sessionId.charCodeAt(i) > id.charCodeAt(i)) {
+          isCaller = false;
+          break;
+        }
+        if (sessionId.charCodeAt(i) < id.charCodeAt(i)) {
+          isCaller = true;
+          break;
+        }
+      }
+
+      const trigger = 30;
+      const deltaX = Math.abs(position.x - otherPlayer.position.x);
+      const deltaZ = Math.abs(position.z - otherPlayer.position.z);
+
+      const peers = isCaller ? callablePeers : otherPlayer.callablePeers;
+      const seshId = isCaller ? id : sessionId;
+
+      if (deltaX + deltaZ <= trigger) {
+        console.log('isCaller:', isCaller);
+        peers.push(seshId);
+      }
+    });
+
+    this.state.players.set(sessionId, new PlayerState(label, position, rotation, callablePeers));
     this.state.cameras.set(sessionId, new CameraState(alpha, position));
   }
 }
@@ -120,6 +189,15 @@ export class OnLeaveCommand extends Command<MainSpaceRoom, {
     this.state.players.delete(sessionId);
     this.state.cameras.delete(sessionId);
     if (!this.state.players.size) this.state.chats.clear();
+
+    this.state.players.forEach((player: PlayerState, id: string) => {
+      if (sessionId === id) return;
+
+      const peerIndex = player.callablePeers.indexOf(sessionId);
+      if (peerIndex >= 0) {
+        player.callablePeers.deleteAt(peerIndex);
+      }
+    });
   }
 }
 

@@ -51,7 +51,10 @@ function SceneComponent() {
     skyBox.infiniteDistance = true;
     skyBox.material = skyMaterial;
 
-    const canvas = scene.getEngine().getRenderingCanvas();
+    const engine = scene.getEngine();
+    engine.stencilState.enabled = true;
+
+    const canvas = engine.getRenderingCanvas();
 
     camera.attachControl(canvas, true);
   }

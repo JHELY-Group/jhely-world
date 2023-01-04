@@ -1,4 +1,4 @@
-import { Schema, type } from "@colyseus/schema";
+import { Schema, type, ArraySchema } from "@colyseus/schema";
 import { KeyInputState } from "./KeyInputState";
 import { PositionState } from "./PositionState";
 
@@ -12,16 +12,20 @@ export class PlayerState extends Schema {
 
   @type(KeyInputState) keyInput: KeyInputState;
 
+  @type(["string"]) callablePeers: ArraySchema<string>;
+
   constructor(
     _label: string,
     _position: PositionState,
-    _rotation: number
+    _rotation: number,
+    _callablePeers: ArraySchema<string>
   ) {
     super();
     this.label = _label;
     this.position = _position;
     this.rotation = _rotation;
     this.keyInput = new KeyInputState();
+    this.callablePeers = _callablePeers;
   }
 
 }

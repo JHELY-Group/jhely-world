@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useScene } from 'babylonjs-hook';
-import { StandardMaterial, Texture, MeshBuilder, Color3 } from '@babylonjs/core';
+import { StandardMaterial, Texture, MeshBuilder, Color3, Vector3, HighlightLayer } from '@babylonjs/core';
 
 function Planets() {
 
@@ -9,23 +9,29 @@ function Planets() {
   useEffect(() => {
     if (scene) {
       const sunMaterial = new StandardMaterial('sunMaterial', scene);
-      sunMaterial.emissiveTexture = new Texture('assets/images/sun.jpg', scene);
+      sunMaterial.emissiveTexture = new Texture('assets/images/sun.png', scene);
       sunMaterial.diffuseColor = Color3.Black();
       sunMaterial.specularColor = Color3.Black();
 
-      const sun = MeshBuilder.CreateSphere('sun', { segments: 16, diameter: 4 }, scene);
+      const sun = MeshBuilder.CreateSphere('sun', { segments: 16, diameter: 8 }, scene);
       sun.material = sunMaterial;
 
-      const images = ['sand.png', 'dark_rock.png', 'brown_rock.png'];
-      const speeds = [0.01, -0.01, 0.005];
+      const hl = new HighlightLayer('hl1', scene, { blurHorizontalSize: 1.5, blurVerticalSize: 1.5 });
+      hl.addMesh(sun, Color3.White(), true);
 
-      for (let i = 0; i < 3; i++) {
+      scene.registerBeforeRender(() => {
+        sun.rotate(Vector3.Up(), 0.001);
+      });
+
+      const speeds = [0.005, -0.005, 0.0025];
+
+      for (let i = 0; i < 5; i++) {
         const planetMaterial = new StandardMaterial('planetMaterial', scene);
-        planetMaterial.diffuseTexture = new Texture(`assets/images/${images[i]}`, scene);
+        planetMaterial.diffuseTexture = new Texture(`assets/images/planet_${i + 1}.png`, scene);
         planetMaterial.specularColor = Color3.Black();
 
-        const planet = MeshBuilder.CreateSphere(`planet${i}`, { segments: 16, diameter: 1 }, scene);
-        planet.position.x = 2 * i + 4;
+        const planet = MeshBuilder.CreateSphere(`planet${i}`, { segments: 16, diameter: 2 }, scene);
+        planet.position.x = 4 * i + 16;
         planet.material = planetMaterial;
 
         const orbit = {

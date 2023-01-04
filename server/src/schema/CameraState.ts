@@ -14,7 +14,7 @@ export class CameraState extends Schema {
   constructor(_alpha: number, _position: PositionState) {
     super();
     this.alpha = _alpha;
-    this.beta = Math.PI * 0.4;
+    this.beta = Math.PI * 0.42;
     this.radius = 20;
     this.position = _position;
   }
